@@ -64,12 +64,8 @@ train <- function (model, trainset, threshold=1e-3, eta=0.1, n.iterations=10000)
 			delta_o = error * (output$f_o)*(1-output$f_o)
 
 			#Calculate the delta_h
-			deriv_net_h = (output$f_h)*(1-output$f_h)
-			delta_h = vector(length=model$hidden.size)
-			for (j in 1:model$hidden.size){
-				delta_h[j] = sum(delta_o * model$w_o[,j]) * deriv_net_h[j]
-			}
-
+			delta_h = colSums(matrix(as.numeric(delta_o)*model$w_o[,1:model$hidden.size], nrow=model$output.size)) * (output$f_h)*(1-output$f_h)
+			
 			#Update the weigths
 			model$w_o = model$w_o + eta * delta_o %*% t(append(output$f_h,1))
 			model$w_h = model$w_h + eta * delta_h %*% t(append(as.numeric(forwardSet[input,]),1))
